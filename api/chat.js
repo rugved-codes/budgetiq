@@ -1,7 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
 // Enable CORS for all methods
-const cors = (req: VercelRequest, res: VercelResponse) => {
+const cors = (req, res) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -16,10 +14,7 @@ const cors = (req: VercelRequest, res: VercelResponse) => {
   return false;
 };
 
-export default async function handler(
-  request: VercelRequest,
-  response: VercelResponse,
-) {
+export default async function handler(request, response) {
   if (cors(request, response)) return;
 
   if (request.method !== 'POST') {
@@ -86,7 +81,7 @@ Professional yet approachable. Knowledgeable without being condescending. Encour
             role: 'system',
             content: systemPrompt,
           },
-          ...(conversationHistory || []).map((msg: { role: string; content: string }) => ({
+          ...(conversationHistory || []).map((msg) => ({
             role: msg.role,
             content: msg.content,
           })),
