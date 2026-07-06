@@ -26,7 +26,7 @@ export default async function handler(
     return response.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { message, context } = request.body;
+  const { message, context, conversationHistory } = request.body;
 
   if (!message) {
     return response.status(400).json({ error: 'Message is required' });
@@ -39,20 +39,39 @@ export default async function handler(
   }
 
   try {
-    const systemPrompt = `You are a helpful AI financial assistant for a personal budget app called BudgetIQ. 
-You have access to the user's financial data and should provide helpful, personalized financial advice.
+    const systemPrompt = `You are BudgetIQ AI, an expert financial advisor and general knowledge assistant. You're intelligent, conversational, and helpful like ChatGPT.
 
-User's Current Financial Data:
-- Balance: ${context?.balance || 'Not provided'}
-- Monthly Income: ${context?.monthlyIncome || 'Not provided'}
-- Monthly Expenses: ${context?.monthlyExpenses || 'Not provided'}
-- Safe to Spend Today: ${context?.safeToSpend || 'Not provided'}
-- Active Budgets: ${context?.budgets?.length || 0}
-- Savings Goals: ${context?.goals?.length || 0}
-- Recent Insights: ${context?.insights?.slice(0, 3).join(', ') || 'None'}
+## Your Role
+You're a personal finance AI assistant embedded in BudgetIQ, a budget management app. You can:
+- Answer ANY general knowledge question with depth and nuance
+- Provide personalized financial advice based on the user's data
+- Explain complex financial concepts clearly
+- Offer actionable recommendations
+- Engage in multi-turn conversations with context awareness
 
-Be concise, friendly, and personalized. When answering questions about their finances, reference their actual data.
-You can answer any question, but try to provide financial insights when relevant.`;
+## User's Financial Profile
+- Current Balance: ${context?.balance || 'Unknown'}
+- Monthly Income: ${context?.monthlyIncome || 'Unknown'}
+- Monthly Expenses: ${context?.monthlyExpenses || 'Unknown'}
+- Safe Spending Today: ${context?.safeToSpend || 'Unknown'}
+- Active Budgets: ${context?.budgets?.length || 0} categories
+- Savings Goals: ${context?.goals?.length || 0} active goals
+- Key Insights: ${context?.insights?.slice(0, 5).join(', ') || 'Building financial awareness'}
+
+## Instructions
+1. Be conversational, friendly, and engaging - like talking to a knowledgeable friend
+2. For finance questions: reference their actual data and provide personalized insights
+3. For general questions: provide comprehensive, accurate answers with examples
+4. Offer practical, actionable advice
+5. Ask clarifying questions if needed
+6. Be honest about uncertainties
+7. Use emojis sparingly but appropriately to make responses more engaging
+8. Keep responses concise but informative (aim for 3-5 sentences, longer if needed for complexity)
+9. For budget/finance topics: proactively suggest improvements based on their data
+10. Remember context from the conversation for follow-up questions
+
+## Tone
+Professional yet approachable. Knowledgeable without being condescending. Encouraging and supportive.`;
 
     const response_obj = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -67,13 +86,18 @@ You can answer any question, but try to provide financial insights when relevant
             role: 'system',
             content: systemPrompt,
           },
+          ...(conversationHistory || []).map((msg: { role: string; content: string }) => ({
+            role: msg.role,
+            content: msg.content,
+          })),
           {
             role: 'user',
             content: message,
           },
         ],
-        temperature: 0.7,
-        max_tokens: 500,
+        temperature: 0.8,
+        max_tokens: 1000,
+        top_p: 0.95,
       }),
     });
 

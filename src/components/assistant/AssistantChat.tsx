@@ -8,10 +8,10 @@ import { generateAssistantReply, getAssistantContext, type ChatMessage } from '.
 import { formatCurrency, getMonthlyExpenses, getMonthlyIncome } from '../../lib/utils'
 
 const starterPrompts = [
-  'What is my current balance?',
-  'How much can I safely spend today?',
-  'Which category am I spending the most on?',
-  'How are my savings goals tracking?',
+  '💰 How much can I safely spend today?',
+  '📊 What\'s my biggest expense category?',
+  '🎯 How are my savings goals tracking?',
+  '💡 What financial advice do you have?',
 ]
 
 export function AssistantChat() {
@@ -20,7 +20,7 @@ export function AssistantChat() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'I can help you understand your spending, budgets, and goals. Ask me anything about your finances.',
+      content: 'Hey! 👋 I\'m your AI finance assistant. I can help you understand your spending, optimize your budget, reach your goals, and answer any questions you have. Ask me anything about your finances or any topic!',
       createdAt: new Date().toISOString(),
     },
   ])
@@ -63,7 +63,7 @@ export function AssistantChat() {
     setBusy(true)
 
     try {
-      const reply = await generateAssistantReply(trimmed, assistantContext)
+      const reply = await generateAssistantReply(trimmed, assistantContext, messages)
       setMessages((prev) => [
         ...prev,
         {
