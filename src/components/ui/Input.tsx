@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import { cn } from '../../lib/utils'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -5,7 +6,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string
 }
 
-export function Input({ label, error, className, id, ...props }: InputProps) {
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  { label, error, className, id, ...props },
+  ref
+) {
   const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
   return (
     <div className="flex flex-col gap-1.5">
@@ -15,6 +19,7 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
         </label>
       )}
       <input
+        ref={ref}
         id={inputId}
         className={cn(
           'w-full px-3.5 py-2.5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm',
@@ -27,7 +32,7 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
       {error && <span className="text-xs text-red-500">{error}</span>}
     </div>
   )
-}
+})
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string

@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button'
 import { ProgressBar } from '../components/ui/ProgressBar'
 import { Badge } from '../components/ui/Badge'
 import { TransactionItem } from '../components/transactions/TransactionItem'
+import { AssistantChat } from '../components/assistant/AssistantChat'
 import { getCategory } from '../lib/categories'
 import {
   formatCurrency, getMonthlyIncome, getMonthlyExpenses,
@@ -83,6 +84,8 @@ export function DashboardPage() {
           </div>
         </Card>
       )}
+
+      <AssistantChat />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="animate-slide-up stagger-4">
