@@ -1,4 +1,4 @@
-import { Plus, TrendingUp, TrendingDown, Shield, ArrowRight, Sparkles, PiggyBank, Target } from 'lucide-react'
+import { Plus, TrendingUp, TrendingDown, Shield, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { Card } from '../components/ui/Card'
