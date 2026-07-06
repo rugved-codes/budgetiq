@@ -24,7 +24,42 @@ export interface ChatMessage {
   createdAt: string
 }
 
-export function generateAssistantReply(question: string, context: AssistantContext): string {
+export async function generateAssistantReply(question: string, context: AssistantContext): Promise<string> {
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: question,
+        context: {
+          balance: context.balance,
+          monthlyIncome: context.monthlyIncome,
+          monthlyExpenses: context.monthlyExpenses,
+          safeToSpend: context.safeToSpend,
+          budgets: context.budgets,
+          goals: context.goals,
+          insights: context.insights,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Chat API error:', error);
+      return getFallbackReply(question, context);
+    }
+
+    const data = await response.json();
+    return data.reply || getFallbackReply(question, context);
+  } catch (error) {
+    console.error('Failed to get AI response:', error);
+    return getFallbackReply(question, context);
+  }
+}
+
+function getFallbackReply(question: string, context: AssistantContext): string {
   const query = question.toLowerCase()
 
   if (query.includes('balance') || query.includes('net')) {

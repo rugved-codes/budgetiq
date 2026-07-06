@@ -47,7 +47,7 @@ export function AssistantChat() {
     [transactions, budgets, goals, currentMonth, balance, safeToSpend, monthlyIncome, monthlyExpenses, insights]
   )
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const trimmed = draft.trim()
     if (!trimmed || busy) return
 
@@ -62,8 +62,8 @@ export function AssistantChat() {
     setDraft('')
     setBusy(true)
 
-    window.setTimeout(() => {
-      const reply = generateAssistantReply(trimmed, assistantContext)
+    try {
+      const reply = await generateAssistantReply(trimmed, assistantContext)
       setMessages((prev) => [
         ...prev,
         {
@@ -73,9 +73,21 @@ export function AssistantChat() {
           createdAt: new Date().toISOString(),
         },
       ])
+    } catch (error) {
+      console.error('Failed to get AI response:', error)
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.',
+          createdAt: new Date().toISOString(),
+        },
+      ])
+    } finally {
       setBusy(false)
       inputRef.current?.focus()
-    }, 250)
+    }
   }
 
   return (
