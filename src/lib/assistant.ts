@@ -97,7 +97,6 @@ function getFallbackReply(question: string, context: AssistantContext): string {
 
   if (query.includes('goal') || query.includes('save') || query.includes('savings')) {
     if (context.goalProgress) {
-      const percentLeft = 100 - context.goalProgress.progress
       return `Your goal **${context.goalProgress.name}** is ${context.goalProgress.progress.toFixed(0)}% complete! You need ${formatCurrency(context.goalProgress.remaining)} more to reach your target. At your current pace, you're making great progress. Keep going! 🎯`
     }
     return `You don't have any active savings goals yet. Setting a goal can help you stay motivated and track progress toward important financial milestones. Would you like to create one?`
